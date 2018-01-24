@@ -42,6 +42,7 @@ export default function bindEventListeners() {
   })()
 
   const clickHandler = event => {
+
     // Simulated events dispatched on the document
     if (!(event.target instanceof Element)) {
       return hideAllPoppers()
@@ -50,26 +51,36 @@ export default function bindEventListeners() {
     const el = closest(event.target, Selectors.TOOLTIPPED_EL)
     const popper = closest(event.target, Selectors.POPPER)
 
-    if (popper) {
+    if (popper && Store) {
       const ref = find(Store, ref => ref.popper === popper)
-      const { settings: { interactive } } = ref
-      if (interactive) return
+      if (ref) {
+        const { settings } = ref
+        const { interactive} = settings
+        if (interactive) return
+      }
     }
 
-    if (el) {
+    if (el && Store) {
+
       const ref = find(Store, ref => ref.el === el)
-      const {
-        settings: {
-          hideOnClick,
-          multiple,
-          trigger
-        }
-      } = ref
+
+      if (!ref) {
+        return hideAllPoppers()
+      }
+
+      const {settings} = ref
+
+      if (!settings) {
+        return hideAllPoppers()
+      }
+
+      const {hideOnClick, multiple, trigger} = ref
+
 
       // Hide all poppers except the one belonging to the element that was clicked IF
       // `multiple` is false AND they are a touch user, OR
       // `multiple` is false AND it's triggered by a click
-      if ((!multiple && Browser.touch) || (!multiple && trigger.indexOf('click') !== -1)) {
+      if ((!multiple && Browser.touch) || (!multiple && trigger && trigger.indexOf('click') !== -1)) {
         return hideAllPoppers(ref)
       }
 

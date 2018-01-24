@@ -967,6 +967,9 @@ function bindEventListeners() {
   }();
 
   var clickHandler = function clickHandler(event) {
+
+    console.log('clickhandler 1');
+
     // Simulated events dispatched on the document
     if (!(event.target instanceof Element)) {
       return (0, _hideAllPoppers2.default)();
@@ -975,29 +978,44 @@ function bindEventListeners() {
     var el = (0, _closest2.default)(event.target, _globals.Selectors.TOOLTIPPED_EL);
     var popper = (0, _closest2.default)(event.target, _globals.Selectors.POPPER);
 
-    if (popper) {
+    if (popper && _globals.Store) {
       var ref = (0, _find2.default)(_globals.Store, function (ref) {
         return ref.popper === popper;
       });
-      var interactive = ref.settings.interactive;
+      if (ref) {
+        var settings = ref.settings;
+        var interactive = settings.interactive;
 
-      if (interactive) return;
+        if (interactive) return;
+      }
     }
 
-    if (el) {
+    if (el && _globals.Store) {
+
       var _ref = (0, _find2.default)(_globals.Store, function (ref) {
         return ref.el === el;
       });
-      var _ref$settings = _ref.settings,
-          hideOnClick = _ref$settings.hideOnClick,
-          multiple = _ref$settings.multiple,
-          trigger = _ref$settings.trigger;
+
+      if (!_ref) {
+        return (0, _hideAllPoppers2.default)();
+      }
+
+      var _settings = _ref.settings;
+
+
+      if (!_settings) {
+        return (0, _hideAllPoppers2.default)();
+      }
+
+      var hideOnClick = _ref.hideOnClick,
+          multiple = _ref.multiple,
+          trigger = _ref.trigger;
 
       // Hide all poppers except the one belonging to the element that was clicked IF
       // `multiple` is false AND they are a touch user, OR
       // `multiple` is false AND it's triggered by a click
 
-      if (!multiple && _globals.Browser.touch || !multiple && trigger.indexOf('click') !== -1) {
+      if (!multiple && _globals.Browser.touch || !multiple && trigger && trigger.indexOf('click') !== -1) {
         return (0, _hideAllPoppers2.default)(_ref);
       }
 
