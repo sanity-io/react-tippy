@@ -968,8 +968,6 @@ function bindEventListeners() {
 
   var clickHandler = function clickHandler(event) {
 
-    console.log('clickhandler 1');
-
     // Simulated events dispatched on the document
     if (!(event.target instanceof Element)) {
       return (0, _hideAllPoppers2.default)();
